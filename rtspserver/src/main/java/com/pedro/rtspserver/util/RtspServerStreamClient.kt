@@ -40,6 +40,10 @@ class RtspServerStreamClient(
     rtspServer.setSocketType(type)
   }
 
+  override fun setSocketTimeout(timeout: Long) {
+    TODO("Not yet implemented")
+  }
+
   override fun reTry(delay: Long, reason: String, backupUrl: String?): Boolean {
     return false
   }
@@ -75,6 +79,10 @@ class RtspServerStreamClient(
 
   override fun getSentVideoFrames(): Long = rtspServer.sentVideoFrames
 
+  override fun getBytesSend(): Long {
+    TODO("Not yet implemented")
+  }
+
   override fun getDroppedAudioFrames(): Long = rtspServer.droppedAudioFrames
 
   override fun getDroppedVideoFrames(): Long = rtspServer.droppedVideoFrames
@@ -93,6 +101,10 @@ class RtspServerStreamClient(
 
   override fun resetDroppedVideoFrames() {
     rtspServer.resetDroppedVideoFrames()
+  }
+
+  override fun resetBytesSend() {
+    TODO("Not yet implemented")
   }
 
   override fun setOnlyAudio(onlyAudio: Boolean) {

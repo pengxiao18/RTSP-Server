@@ -15,7 +15,7 @@ class StreamServerSocket(
     private var ktorServer: io.ktor.network.sockets.ServerSocket? = null
     private var javaServer: ServerSocket? = null
 
-    fun create(port: Int) {
+    suspend fun create(port: Int) {
         when (type) {
             SocketType.KTOR -> {
                 val selectorManager = SelectorManager(Dispatchers.IO)

@@ -27,6 +27,10 @@ class ServerClient(
   private val listener: ClientListener
 ) {
 
+  companion object {
+    const val DEFAULT_TIMEOUT = 5000L
+  }
+
   private val TAG = "Client"
   private val connectChecker = object: ConnectChecker {
     override fun onAuthError() {}
@@ -123,7 +127,7 @@ class ServerClient(
             rtspSender.setSocketsInfo(
               socketType,
               commandManager.protocol,
-              host,
+              host, DEFAULT_TIMEOUT,
               videoServerPorts,
               audioServerPorts,
               videoPorts, audioPorts
