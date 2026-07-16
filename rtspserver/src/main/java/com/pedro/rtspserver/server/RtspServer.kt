@@ -9,7 +9,6 @@ import com.pedro.common.onMainThread
 import com.pedro.common.onMainThreadHandler
 import com.pedro.common.socket.base.SocketType
 import com.pedro.common.socket.base.StreamSocket
-import com.pedro.rtsp.utils.RtpConstants
 import com.pedro.rtspserver.socket.StreamServerSocket
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -120,6 +119,7 @@ class RtspServer(
   fun startServer() {
     running = true
     job = scope.launch {
+      serverCommandManager.updateTimestamp()
       try {
         if (!serverCommandManager.videoDisabled) {
           if (!serverCommandManager.videoInfoReady()) {
@@ -155,7 +155,7 @@ class RtspServer(
           synchronized(clients) {
             clients.add(client)
           }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
           // server.close called
           break
         } catch (e: Exception) {
@@ -187,19 +187,19 @@ class RtspServer(
 
   fun setOnlyAudio(onlyAudio: Boolean) {
     if (onlyAudio) {
-      RtpConstants.trackAudio = 0
-      RtpConstants.trackVideo = 1
+      serverCommandManager.rtpTracks.trackAudio = 0
+      serverCommandManager.rtpTracks.trackVideo = 1
     } else {
-      RtpConstants.trackVideo = 0
-      RtpConstants.trackAudio = 1
+      serverCommandManager.rtpTracks.trackVideo = 0
+      serverCommandManager.rtpTracks.trackAudio = 1
     }
     serverCommandManager.audioDisabled = false
     serverCommandManager.videoDisabled = onlyAudio
   }
 
   fun setOnlyVideo(onlyVideo: Boolean) {
-    RtpConstants.trackVideo = 0
-    RtpConstants.trackAudio = 1
+    serverCommandManager.rtpTracks.trackVideo = 0
+    serverCommandManager.rtpTracks.trackAudio = 1
     serverCommandManager.videoDisabled = false
     serverCommandManager.audioDisabled = onlyVideo
   }
@@ -365,9 +365,8 @@ class RtspServer(
     }
   }
 
-  private fun List<NetworkInterface>.findAddress(): List<String?> = this.asSequence()
-    .map { addresses -> addresses.inetAddresses.asSequence() }
-    .flatten()
+  private fun List<NetworkInterface>.findAddress(): List<String?> =
+    this.asSequence().flatMap { addresses -> addresses.inetAddresses.asSequence() }
     .filter { address -> !address.isLoopbackAddress }
     .map { it.hostAddress }
     .filter { address ->
