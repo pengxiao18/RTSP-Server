@@ -257,6 +257,7 @@ class ServerClient(
       val seed = DatagramSocket(0)
       val candidate = seed.localPort.let { if (it % 2 == 0) it else it + 1 }
       seed.close()
+      if (candidate >= 65535) return@repeat
       try {
         reservedSockets.add(DatagramSocket(candidate))
         reservedSockets.add(DatagramSocket(candidate + 1))
