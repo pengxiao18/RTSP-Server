@@ -88,6 +88,12 @@ class RtspServer(
       clients.forEach { items += it.bytesSend }
       return items
     }
+  val queueBytesOut: Long
+    get() = synchronized(clients) {
+      var items = 0L
+      clients.forEach { items += it.queueBytesOut }
+      return items
+    }
 
   fun setClientListener(clientListener: ClientListener?) {
     this.clientListener = clientListener

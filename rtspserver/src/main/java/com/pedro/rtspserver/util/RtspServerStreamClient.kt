@@ -71,6 +71,8 @@ class RtspServerStreamClient(
 
   override fun getItemsInCache(): Int = rtspServer.getItemsInCache()
 
+  override fun getQueueBytesOut(): Long = rtspServer.queueBytesOut
+
   override fun getSentAudioFrames(): Long = rtspServer.sentAudioFrames
 
   override fun getSentVideoFrames(): Long = rtspServer.sentVideoFrames

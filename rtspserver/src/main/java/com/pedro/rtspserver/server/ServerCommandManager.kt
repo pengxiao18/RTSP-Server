@@ -171,9 +171,10 @@ class ServerCommandManager: CommandsManager() {
     var audioBody = ""
     if (!audioDisabled) {
       audioBody = when (audioCodec) {
-        AudioCodec.AAC -> SdpBody.createAacBody(rtpTracks.trackAudio, sampleRate, isStereo)
-        AudioCodec.G711 -> SdpBody.createG711Body(rtpTracks.trackAudio, sampleRate, isStereo)
-        AudioCodec.OPUS -> SdpBody.createOpusBody(rtpTracks.trackAudio)
+        AudioCodec.AAC -> SdpBody.createAacBody(rtpTracks.trackAudio, sampleRate, isStereo, false)
+        AudioCodec.HE_AAC -> SdpBody.createAacBody(rtpTracks.trackAudio, sampleRate, isStereo, true)
+        AudioCodec.G711 -> SdpBody.createG711Body(rtpTracks.trackAudio)
+        AudioCodec.OPUS -> SdpBody.createOpusBody(rtpTracks.trackAudio, sampleRate, isStereo)
       }
     }
     var videoBody = ""
@@ -184,14 +185,21 @@ class ServerCommandManager: CommandsManager() {
       videoBody = when (videoCodec) {
         VideoCodec.H264 -> {
           if (sps == null || pps == null) throw IllegalArgumentException("sps or pps can't be null with h264")
-          SdpBody.createH264Body(rtpTracks.trackVideo, spsString, ppsString)
+          SdpBody.createH264Body(rtpTracks.trackVideo, sps, pps)
         }
         VideoCodec.H265 -> {
           if (sps == null || pps == null || vps == null) throw IllegalArgumentException("sps, pps or vps can't be null with h265")
-          SdpBody.createH265Body(rtpTracks.trackVideo, spsString, ppsString, vpsString)
+          SdpBody.createH265Body(rtpTracks.trackVideo, sps, pps, vps)
+        }
+        VideoCodec.VP8 -> {
+          SdpBody.createVp8Body(rtpTracks.trackVideo)
+        }
+        VideoCodec.VP9 -> {
+          SdpBody.createVp9Body(rtpTracks.trackVideo)
         }
         VideoCodec.AV1 -> {
-          SdpBody.createAV1Body(rtpTracks.trackVideo)
+          if (sps == null) throw IllegalArgumentException("header can't be null with av1")
+          SdpBody.createAV1Body(rtpTracks.trackVideo, sps)
         }
       }
     }

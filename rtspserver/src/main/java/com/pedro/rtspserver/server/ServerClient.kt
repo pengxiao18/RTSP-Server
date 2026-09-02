@@ -87,6 +87,8 @@ class ServerClient(
     get() = rtspSender.getSentVideoFrames()
   val bytesSend: Long
     get() = rtspSender.getBytesSend()
+  val queueBytesOut: Long
+    get() = rtspSender.getQueueBytesOut()
 
   init {
     serverCommandManager.setServerInfo(serverIp, serverPort)
@@ -217,14 +219,14 @@ class ServerClient(
   fun sendVideoFrame(videoBuffer: ByteBuffer, info: MediaCodec.BufferInfo) {
     if (canSend) {
       if (startTs == 0L) startTs = info.presentationTimeUs
-      rtspSender.sendMediaFrame(MediaFrame(videoBuffer.clone(), info.toMediaFrameInfo(startTs), MediaFrame.Type.VIDEO))
+      rtspSender.sendMediaFrame(videoBuffer.clone(), info.toMediaFrameInfo(startTs), MediaFrame.Type.VIDEO)
     }
   }
 
   fun sendAudioFrame(audioBuffer: ByteBuffer, info: MediaCodec.BufferInfo) {
     if (canSend) {
       if (startTs == 0L) startTs = info.presentationTimeUs
-      rtspSender.sendMediaFrame(MediaFrame(audioBuffer.clone(), info.toMediaFrameInfo(startTs), MediaFrame.Type.AUDIO))
+      rtspSender.sendMediaFrame(audioBuffer.clone(), info.toMediaFrameInfo(startTs), MediaFrame.Type.AUDIO)
     }
   }
 
